@@ -11,6 +11,10 @@ The benchmark uses 150,000 synthetic records, a stratified 120,000/30,000 split 
 | Le Hoang Ky Phuong | https://orcid.org/0009-0007-7325-0720 |
 | Nguyen Anh Khoa | https://orcid.org/0009-0008-6007-9693 |
 | Luu Gia Luong | https://orcid.org/0009-0002-2274-6121 |
+| Thu Le | https://orcid.org/0009-0008-3480-8311 |
+| Nhat-Tung Le | https://orcid.org/0000-0002-7210-3426 |
+
+Le Hoang Ky Phuong is the first author. Nhat-Tung Le is the last author and corresponding author: tungln4@fpt.edu.vn. All authors are affiliated with FPT University, Ho Chi Minh City, Vietnam.
 
 ## Data and licenses
 
