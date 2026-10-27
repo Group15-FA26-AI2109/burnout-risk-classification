@@ -1,0 +1,20 @@
+{
+  "references": 21,
+  "recent_2022_2026": 12,
+  "recent_fraction": 0.5714285714285714,
+  "recent_ids": [
+    "wellness",
+    "padmashali",
+    "trink23",
+    "trink24",
+    "mapping",
+    "review",
+    "feng",
+    "ribeiro",
+    "michels",
+    "patel",
+    "dataset",
+    "adapa"
+  ],
+  "caveat": "Kaggle version-1 release date verified against publisher metadata saved in revision_20261022/reference_sources. Even excluding Kaggle, 11/20 sources fall in 2022-2026. No Scopus-indexing claim is made for preprints."
+}

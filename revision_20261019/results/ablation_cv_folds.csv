@@ -1,0 +1,26 @@
+Feature_set,fold,AP
+F1: all features,1,0.8109513879186312
+F1: all features,2,0.8069029544446359
+F1: all features,3,0.8101691886215424
+F1: all features,4,0.7991481684481474
+F1: all features,5,0.8045087075415026
+F2: without psychological,1,0.7297511104404657
+F2: without psychological,2,0.724791553445702
+F2: without psychological,3,0.7194841348284579
+F2: without psychological,4,0.7201529762370305
+F2: without psychological,5,0.7190373654283235
+F3: work environment and lifestyle,1,0.6903084474642118
+F3: work environment and lifestyle,2,0.69181866215497
+F3: work environment and lifestyle,3,0.6813257793982623
+F3: work environment and lifestyle,4,0.6787929412273892
+F3: work environment and lifestyle,5,0.6845050079043677
+F4: without treatment,1,0.7928844685271247
+F4: without treatment,2,0.7915325909692147
+F4: without treatment,3,0.7906772639437059
+F4: without treatment,4,0.7786404633450277
+F4: without treatment,5,0.7898696378619777
+F5: without psychological and treatment,1,0.6903593252379153
+F5: without psychological and treatment,2,0.6919245147281986
+F5: without psychological and treatment,3,0.6813515780685594
+F5: without psychological and treatment,4,0.6785933619517349
+F5: without psychological and treatment,5,0.6845074221618053
