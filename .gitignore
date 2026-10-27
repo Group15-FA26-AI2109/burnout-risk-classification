@@ -1,0 +1,8 @@
+.venv*/
+__pycache__/
+*.py[cod]
+training_run*/
+*.aux
+*.out
+*.log
+*.synctex.gz
