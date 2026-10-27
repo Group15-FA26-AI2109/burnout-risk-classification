@@ -1,0 +1,16 @@
+feature,group_name,corr_with_at_risk,abs_corr
+stress_level,Psychological,0.494,0.494
+depression_score,Psychological,0.408,0.408
+anxiety_score,Psychological,0.365,0.365
+work_life_balance,Work environment,-0.319,0.319
+work_hours_per_week,Work environment,0.294,0.294
+manager_support,Work environment,-0.208,0.208
+overtime_hours,Work environment,0.149,0.149
+sleep_hours,Lifestyle,-0.089,0.089
+social_support_score,Work environment,-0.066,0.066
+physical_activity_days,Lifestyle,-0.038,0.038
+screen_time_hours,Lifestyle,0.026,0.026
+job_satisfaction,Work environment,-0.025,0.025
+caffeine_intake,Lifestyle,0.002,0.002
+meetings_per_day,Work environment,0.001,0.001
+deadlines_missed,Work environment,-0.0,0.0

@@ -1,0 +1,11 @@
+{
+  "engine": "DuckDB",
+  "version": "1.5.6",
+  "records": 150000,
+  "data_sha256": "0bf19913d26b49546a96de481de04474a551b7b24cb579549f7c61f6365a92e0",
+  "queries": 3,
+  "pandas_crosscheck": "passed",
+  "source_query_2_group_note": "Corrected canonical SQL: social_support_score consistently belongs to Work environment.",
+  "query_3_minimum_group_size": 30,
+  "query_3_records_in_retained_cells": 150000
+}
