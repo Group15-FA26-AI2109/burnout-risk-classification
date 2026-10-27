@@ -1,0 +1,15 @@
+{
+  "python": "3.13.16 (main, Oct  1 2026, 15:40:24) [GCC 13.3.0]",
+  "imported_modules": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "matplotlib": "3.11.2",
+    "sklearn": "1.9.1",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.7.0",
+    "shap": "0.53.0",
+    "imblearn": "0.14.2",
+    "joblib": "1.6.0",
+    "scipy": "1.16.3"
+  }
+}
