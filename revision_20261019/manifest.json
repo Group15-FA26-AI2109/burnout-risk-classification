@@ -1,0 +1,22 @@
+{
+  "started_utc": "2026-10-19T09:48:12.683164+00:00",
+  "status": "complete",
+  "seed": 42,
+  "n_bootstrap": 2000,
+  "data_sha256": "0bf19913d26b49546a96de481de04474a551b7b24cb579549f7c61f6365a92e0",
+  "script_sha256": "92e58527bee4df1d3325de30985b025640c741bbd11f11508b41bd22154d38af",
+  "retained_benchmark": "Five fitted pipelines and saved test/CV/OOF predictions; verified before changes",
+  "packages": {
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "shap": "0.53.0"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "elapsed_seconds": 19.24194836616516,
+  "train_records": 120000,
+  "test_records": 30000,
+  "corrected_shap_additivity": true,
+  "fast_bootstrap_matches_sklearn": true,
+  "original_F1_F2_F3_AP_reproduced": true,
+  "completed_utc": "2026-10-19T09:48:31.925112+00:00"
+}
