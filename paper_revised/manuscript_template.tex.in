@@ -17,9 +17,9 @@
 \begin{document}
 \title{Explainable Burnout Risk Classification in Technology Workers: Benchmarking and Feature Ablation on Synthetic Data}
 \titlerunning{Explainable Burnout Risk Classification on Synthetic Data}
-\author{\mbox{Le Hoang Ky Phuong\orcidID{0009-0007-7325-0720}} \and \mbox{Nguyen Anh Khoa\orcidID{0009-0008-6007-9693}} \and \mbox{Luu Gia Luong\orcidID{0009-0002-2274-6121}}}
+\author{\mbox{Le Hoang Ky Phuong\inst{1}\orcidID{0009-0007-7325-0720}} \and \mbox{Nguyen Anh Khoa\inst{1}\orcidID{0009-0008-6007-9693}} \and \mbox{Luu Gia Luong\inst{1}\orcidID{0009-0002-2274-6121}} \and \mbox{Thu Le\inst{1}\orcidID{0009-0008-3480-8311}} \and \mbox{Nhat-Tung Le\inst{1}\textsuperscript{*}\orcidID{0000-0002-7210-3426}}}
 \authorrunning{L. H. K. Phuong et al.}
-\institute{Faculty of Information Technology, FPT University, Ho Chi Minh City, Vietnam\\\email{lehoangkyphuong9a3@gmail.com}}
+\institute{\textsuperscript{1}FPT University, Ho Chi Minh City, Vietnam\\\textsuperscript{*}\email{tungln4@fpt.edu.vn}}
 \maketitle
 \begin{abstract}
 This study compares five classifiers for burnout-risk classification using 150,000 synthetic records of technology workers. Moderate and High burnout levels form the At Risk class, which represents 12.25\% of the data; both burnout score and level are excluded from the predictors. Training cross-validation (CV) selects Logistic Regression by average precision (AP, referred to as PR-AUC), with test AP 0.811 (95\% paired-bootstrap interval 0.800--0.822; 2,000 resamples), ROC-AUC 0.964 and F1 0.664 at threshold 0.5. The published XGBoost baseline reports F1 0.708 and ROC-AUC 0.960 under different settings. Aggregating signed one-hot SHAP contributions before taking absolute values reduces inflated categorical importance. Work environment and Psychological variables then account for 55.08\% and 32.16\% of attribution magnitude. Removing stress, anxiety and depression lowers AP by 0.0825 to 0.728, while removing treatment indicators gives AP 0.790. These results describe classification within the synthetic dataset and require validation on real occupational data before use in screening.
