@@ -1,0 +1,15 @@
+{
+  "checked_date": "2026-10-22",
+  "source_url": "https://www.kaggle.com/api/v1/datasets/download/suhanigupta04/employee-mental-health-and-burnout-dataset?datasetVersionNumber=1",
+  "zip_sha256": "2bced24e93176348002c8d1467f8dcf68a3e7bdd610312d26a43fce5406bdcbc",
+  "local_file": "C:\\Users\\Lenovo\\Documents\\ChatGPT\\ADY201m\\tech_mental_health_burnout.csv",
+  "local_sha256": "0bf19913d26b49546a96de481de04474a551b7b24cb579549f7c61f6365a92e0",
+  "public_files": [
+    {
+      "name": "tech_mental_health_burnout.csv",
+      "bytes": 16538256,
+      "sha256": "0bf19913d26b49546a96de481de04474a551b7b24cb579549f7c61f6365a92e0"
+    }
+  ],
+  "local_matches_public": true
+}
