@@ -1,0 +1,133 @@
+\documentclass[runningheads]{llncs}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx,booktabs,array,amsmath,amssymb,placeins,xurl}
+\usepackage[hidelinks]{hyperref}
+\renewcommand\UrlFont{\rmfamily}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\floatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\renewcommand{\topfraction}{.9}
+\renewcommand{\bottomfraction}{.8}
+\renewcommand{\textfraction}{.1}
+\renewcommand{\floatpagefraction}{.8}
+\emergencystretch=2em
+\raggedbottom
+\begin{document}
+\title{Explainable Burnout Risk Classification in Technology Workers: Benchmarking and Feature Ablation on Synthetic Data}
+\titlerunning{Explainable Burnout Risk Classification on Synthetic Data}
+\author{\mbox{Le Hoang Ky Phuong\orcidID{0009-0007-7325-0720}} \and \mbox{Nguyen Anh Khoa\orcidID{0009-0008-6007-9693}} \and \mbox{Luu Gia Luong\orcidID{0009-0002-2274-6121}}}
+\authorrunning{L. H. K. Phuong et al.}
+\institute{Faculty of Information Technology, FPT University, Ho Chi Minh City, Vietnam\\\email{lehoangkyphuong9a3@gmail.com}}
+\maketitle
+\begin{abstract}
+This study compares five classifiers for burnout-risk classification using 150,000 synthetic records of technology workers. Moderate and High burnout levels form the At Risk class, which represents 12.25\% of the data; both burnout score and level are excluded from the predictors. Training cross-validation (CV) selects Logistic Regression by average precision (AP, referred to as PR-AUC), with test AP 0.811 (95\% paired-bootstrap interval 0.800--0.822; 2,000 resamples), ROC-AUC 0.964 and F1 0.664 at threshold 0.5. The published XGBoost baseline reports F1 0.708 and ROC-AUC 0.960 under different settings. Aggregating signed one-hot SHAP contributions before taking absolute values reduces inflated categorical importance. Work environment and Psychological variables then account for 55.08\% and 32.16\% of attribution magnitude. Removing stress, anxiety and depression lowers AP by 0.0825 to 0.728, while removing treatment indicators gives AP 0.790. These results describe classification within the synthetic dataset and require validation on real occupational data before use in screening.
+\keywords{burnout classification \and synthetic data \and average precision \and grouped SHAP \and feature ablation}
+\end{abstract}
+
+\section{Introduction}
+The World Health Organization (WHO) classifies burnout in ICD-11 as an occupational phenomenon associated with unmanaged chronic work stress rather than a medical condition \cite{who}. Surveys of technology workers illustrate the concern, although their estimates depend on the population and measure used. In Developer Nation's March 2024 voluntary survey of 993 developers in 86 countries, 83\% reported having felt burnout at some point in their careers \cite{wellness}. Padmashali found moderate personal burnout in 47.5\% of a convenience sample of 40 IT professionals working from home during the pandemic \cite{padmashali}. These findings do not estimate representative industry point prevalence and cannot be compared directly with the proportion of a synthetic class.
+
+Organizational conditions also matter. A survey of 3,281 developers associated organizational resources and work satisfaction with reduced burnout \cite{trink23}, and an extended study examined 13,343 complete responses together with employment status after 90 days \cite{trink24}. Reviews describe the wider software-engineering literature \cite{mapping,review}, including recent work on GenAI-related demands \cite{feng}, perceived instability \cite{ribeiro} and developer overwhelm \cite{michels}. The differences in their populations, instruments and outcomes motivate careful feature analysis but limit comparisons with a synthetic classifier benchmark. This focus on mental well-being is consistent with United Nations Sustainable Development Goal 3, Target 3.4 \cite{un}, although the present study does not measure progress toward that target.
+
+\subsection{Related work and research questions}
+Patel et al.\ \cite{patel} provide the closest numerical comparison because they examine the same family of synthetic burnout data (Table~\ref{tab:related}). Their XGBoost model with the Synthetic Minority Over-sampling Technique (SMOTE) achieves F1 0.7081 and ROC-AUC 0.9604, while AP is absent from the reported results. Their DeLong test, which compares correlated ROC areas, gives $p=0.94$ for XGBoost with versus without SMOTE and therefore offers no evidence of an ROC-AUC improvement in that comparison. Adapa et al.\ \cite{adapa} study burnout classification in real healthcare survey data using a two-item Maslach Burnout Inventory (MBI), Random Forest and recursive feature elimination. This provides a second empirical comparison, but its population and instrument differ from ours. The attrition F-measure of 0.880 reported in \cite{trink24} concerns a different outcome and is also unsuitable as a burnout AP benchmark.
+
+@@RELATED@@
+
+The study extends this evidence through AP-based evaluation, an attribution calculation that accounts for one-hot cancellation, and controlled feature ablation. It addresses three research questions. RQ1 identifies the original variables and categories that contribute most according to signed-grouped SHAP and permutation importance. RQ2 compares the training-CV AP of the five pipelines and their held-out metrics with the alternatives and published baseline. RQ3 measures the change in AP when only stress, anxiety and depression are removed, comparing F1 with F2 while keeping the other inputs, split and model settings fixed. The additional F3--F5 configurations examine broader restrictions on available information and are reported separately from the psychological ablation.
+
+\section{Methodology}
+\subsection{Data, target and leakage control}
+We use version 1 of the \emph{Employee Mental Health \& Burnout Dataset}, published by S. Gupta on Kaggle on 15 March 2026 \cite{dataset}. The dataset card describes 150,000 synthetic records with correlated, derived scores for stress, anxiety and depression. The retained CSV contains 25 columns, no missing values and no duplicate rows. Its SHA-256 matches the public version-1 file byte-for-byte in a check conducted on 22 October 2026; the publisher metadata and hash comparison accompany the project. The inspected documentation provides no generator code, label-generation formula, validated clinical assessment or timestamps for predictors and outcomes.
+
+The source labels comprise 131,620 Low, 18,315 Moderate and 65 High records. Combining Moderate and High gives 18,380 At Risk records (12.25\%), with Low forming Not at Risk; this binary task does not estimate severity. We exclude both \texttt{burnout\_score} and \texttt{burnout\_level}, leaving the 23 predictors in Table~\ref{tab:features}. The dataset card also identifies \texttt{seeks\_professional\_help} as a second intended target. Since treatment timing is unknown, using this indicator as a burnout predictor may introduce information that would be unavailable before an outcome. F4 and F5 examine dependence on the treatment indicators, while their actual temporal availability remains unresolved.
+
+@@FEATURES@@
+
+Three Structured Query Language (SQL) queries run in DuckDB describe class means, numeric correlations with the target, and the relationship between stress and weekly working hours. All 16 cells in the final cross-tabulation meet the minimum count of 30 and together cover all 150,000 records. We check the counts, means, correlations and rates independently with pandas and assign \texttt{social\_support\_score} to Work environment in SQL, modelling and the dashboard. These summaries describe the full dataset and are not used to select models or thresholds.
+
+\subsection{Split, preprocessing and feature sets}
+A target-stratified 80/20 split with seed 42 produces 120,000 training records, including 14,704 At Risk cases, and 30,000 test records, including 3,676 At Risk cases. Saved row indices confirm that the sets are disjoint. Gender, job role, company size and work mode receive full one-hot encoding with handling for unknown categories, while binary inputs remain 0/1. Numeric predictors are standardized for Logistic Regression and MLP and left unscaled for the tree models. Encoders, scalers and optional SMOTE are fitted within each training fold to prevent information from the validation data entering preprocessing (Fig.~\ref{fig:pipeline}). Because the dataset contains no dates, a temporal split is not possible.
+
+We evaluate five feature sets using the same Logistic Regression settings, training rows and five CV folds. F1 contains all predictors, and F2 removes only the three psychological variables to answer RQ3. F3 retains work environment and lifestyle variables, so it also excludes demographics and treatment. F4 removes the two treatment indicators, while F5 removes psychological and treatment variables but retains demographics. These additional configurations distinguish the effect of removing psychology alone from the effect of more restrictive information availability.
+
+@@PIPELINE@@
+
+\subsection{Model configurations}
+The comparison includes Logistic Regression, Random Forest \cite{rf}, XGBoost \cite{xgb}, LightGBM \cite{lgb} and a multilayer perceptron (MLP), implemented as scikit-learn-compatible pipelines \cite{sklearn}. Each uses the fixed hyperparameters in Table~\ref{tab:params}, without random-search tuning. The accompanying JSON records fitted-estimator defaults for four models and the archived training arguments for XGBoost, whose native tree file does not retain every training setting. MLP serves as an unweighted log-loss reference with early stopping. Although weighting is technically possible, it was not included in this configuration, so the comparison evaluates the specified pipelines rather than isolating architectural effects under identical objectives. A separate Logistic Regression experiment compares no correction, class weights and SMOTE \cite{smote}.
+
+@@PARAMS@@
+
+\subsection{Evaluation and uncertainty}
+Model selection uses the highest mean AP from shuffled, stratified five-fold training CV with seed 42. AP is calculated using scikit-learn's non-interpolated definition in Equation~\eqref{eq:ap},
+\begin{equation}\mathrm{AP}=\sum_n(R_n-R_{n-1})P_n,\label{eq:ap}\end{equation}
+where $P_n$ and $R_n$ denote precision and recall at successive operating points ordered by increasing recall. Equation~\eqref{eq:ap} weights precision by the change in recall and differs from trapezoidal integration of the precision--recall curve. We retain ``PR-AUC'' as the source report's name for AP. The expected random-ranking reference is approximately the positive prevalence, 0.1225, whereas always predicting the majority class gives 87.75\% accuracy. AP therefore provides a more useful primary measure for this imbalanced task \cite{saito}. We also report ROC-AUC and At Risk precision, recall and F1 at threshold 0.5. Training out-of-fold (OOF) probabilities are used to choose an F1-optimal threshold and a threshold targeting recall of at least 80\%, both fixed before test evaluation.
+
+To estimate uncertainty, we calculate percentile 95\% intervals from 2,000 ordinary test-row bootstrap resamples with seed 43. Each resample uses the same sampled rows across models and feature sets, producing paired intervals for AP differences. The multiplicity-weighted AP calculation is checked against literal row resampling, including tied scores. These intervals describe variation conditional on the fitted models and synthetic test distribution; they exclude uncertainty from retraining, model selection and transfer to external populations. The model contrasts are descriptive and have no multiplicity correction.
+
+The exact two-sided Wilcoxon signed-rank comparisons on five nonzero fold pairs all return $p=0.0625$, the smallest attainable exact two-sided p-value for five pairs. This design cannot reject at 0.05, and overlapping training folds make the comparisons dependent. We retain the fold summaries for reproducibility without interpreting the tests as evidence of superiority or equivalence.
+
+\subsection{Model explanation and reproducibility}
+We explain the selected Logistic Regression using SHapley Additive exPlanations (SHAP) \cite{shap} on 2,000 test records sampled with seed 42. The values use log-odds units, the natural logarithm of the odds of the At Risk class. The Independent masker retains 100 records from a candidate background of 1,000 training records; the training script explicitly sets \texttt{max\_samples=100}. Equation~\eqref{eq:grouped} combines the encoded contributions for each original variable $j$,
+\begin{equation}\Phi_{ij}=\sum_{k\in G_j}\phi_{ik},\label{eq:grouped}\end{equation}
+where $i$ identifies a record, $G_j$ contains the encoded columns for variable $j$, and $\phi_{ik}$ is the signed SHAP contribution of encoded column $k$. We then calculate global importance $I_j$ over the $m=2{,}000$ explained records using Equation~\eqref{eq:importance},
+\begin{equation}I_j=\frac{1}{m}\sum_{i=1}^{m}|\Phi_{ij}|.\label{eq:importance}\end{equation}
+Taking the absolute value in Equation~\eqref{eq:importance} after the signed sum in Equation~\eqref{eq:grouped} allows opposing dummy contributions to cancel within each record. Adding their magnitudes first would count those opposing effects as importance. The regrouped values preserve local log-odds additivity, which we check independently against the linear-model formula. They regroup the existing attributions rather than estimate a new conditional Shapley game. Category shares are normalized sums of $I_j$. We also measure permutation importance as the AP drop on 10,000 test records over five repeats, applying the same row permutation jointly to all columns of a category. Correlated predictors can affect the result, and the drops are neither additive components nor causal effects.
+
+The reproducibility package verifies the five benchmark models against saved CV, OOF and test predictions. The feature-set analysis comprises 30 Logistic Regression fits: one full-training fit and five fold fits for each of F1--F5. F4 and F5 are post hoc sensitivity analyses on the existing hold-out set. Reproduction materials include code, library versions, hyperparameters, row indices, predictions, bootstrap replicates and SQL checks, with commands in \texttt{README.md}. The native XGBoost JSON and saved preprocessor support verification across operating systems.
+
+\section{Results}
+\subsection{Descriptive findings}
+The At Risk proportion changes little across work modes, ranging from 12.15\% for Onsite to 12.25\% for Hybrid and 12.33\% for Remote. Working hours show a stronger gradient, with rates rising from 2.76\% in the lowest quartile to 27.15\% in the highest. The largest absolute numeric correlations with the target are stress (0.494), depression (0.408), anxiety (0.365), work--life balance ($-0.319$) and weekly hours (0.294). The cross-tabulation in Table~\ref{tab:heat} further shows how risk varies with stress and hours. An exact count finds zero At Risk cases among the 12,749 records with stress below 4, confirming that the four displayed zeros are observed counts rather than small positive rates rounded to 0.0\%.
+
+@@HEAT@@
+
+\subsection{Original-variable importance (RQ1)}
+Weekly hours, stress, work--life balance and manager support are the leading variables under both explanation methods (Fig.~\ref{fig:importance}), with permutation AP drops of 0.2030, 0.1352, 0.1236 and 0.0765, respectively. In the fitted linear model, higher hours and stress align with higher output, whereas higher balance and manager support align with lower output. Signed grouping gives work-mode importance of 0.0203 log-odds, compared with 0.6395 when dummy magnitudes are summed before grouping. The aggregation choice does not change predicted probabilities or numeric-variable SHAP values.
+
+At category level, Work environment accounts for 55.08\% of signed-grouped attribution magnitude and Psychological variables for 32.16\% (Table~\ref{tab:importance}). Psychological variables produce the largest joint permutation drop, 0.4043, compared with 0.3953 for Work environment. The difference in ranking follows from the quantities being measured: SHAP shares summarize attribution magnitude, while permutation tests the disruption caused by shuffling inputs. The shares should therefore not be read as explained variance or causal effects.
+
+@@CATEGORY@@
+
+@@IMPORTANCE@@
+
+\subsection{Configured model comparison (RQ2)}
+Logistic Regression has the highest mean training-CV AP, $0.806\pm0.005$, and is selected for the subsequent analyses. It also achieves the highest test AP, 0.811 (95\% interval 0.800--0.822). This advantage concerns ranking performance: MLP has the highest F1 at the default threshold, 0.710, while Logistic Regression combines higher recall (0.920) with lower precision (0.520). Table~\ref{tab:models} and Fig.~\ref{fig:pr} show these different aspects of performance.
+
+@@MODELS@@
+
+Relative to Logistic Regression, the paired AP differences and their 95\% intervals are $-0.0518$ ($-0.058$ to $-0.045$) for Random Forest, $-0.0080$ ($-0.010$ to $-0.006$) for XGBoost, $-0.0082$ ($-0.010$ to $-0.006$) for LightGBM and $-0.0043$ ($-0.006$ to $-0.002$) for MLP. These conditional intervals exclude zero, although the smaller differences do not by themselves establish a substantial practical advantage. They also leave the uncertainty from dependent training folds unresolved. Compared with Patel et al., our Logistic Regression has F1 0.664 versus 0.708 and ROC-AUC 0.964 versus 0.960. Since the exact test rows, objectives, preprocessing and thresholds are not matched, these published values provide context rather than a paired significance comparison.
+
+@@PR@@
+
+\subsection{Psychological ablation (RQ3) and treatment sensitivities}
+Comparing F1 with F2 isolates the removal of the three psychological variables and answers RQ3 (Table~\ref{tab:ablation}). AP falls from 0.810967 to 0.728468, an absolute loss of 0.082499 (95\% paired interval 0.074--0.091), or 10.17\% relative to F1. These differences are calculated from unrounded estimates. F3 removes demographic and treatment variables as well, so its 15.02\% loss cannot be attributed to psychology alone.
+
+@@ABLATION@@
+
+Removing treatment alone in F4 gives AP 0.789913 (95\% interval 0.778--0.801), a loss of 0.021054 (0.017--0.025), or 2.60\%. F5 retains demographics while removing psychology and treatment and reaches AP 0.689144, close to F3's 0.689199. The corresponding training-CV AP means and sample standard deviations for F1--F5 are $0.806\pm0.005$, $0.723\pm0.005$, $0.685\pm0.006$, $0.789\pm0.006$ and $0.685\pm0.006$. The results show dependence on treatment information and little additional discrimination from demographics after both information groups are excluded; they do not establish when treatment was recorded or whether either configuration is suitable for deployment.
+
+\subsection{Imbalance, thresholds and dashboard}
+In the Logistic Regression comparison, no correction, class weights and SMOTE each give rounded CV AP $0.806\pm0.005$. Their threshold-dependent behaviour differs, however. Class weights increase default-threshold CV recall from 0.637 to 0.911 and reduce precision from 0.770 to 0.516; SMOTE gives recall 0.897 and precision 0.535. At the reported precision, these changes show a shift in the precision--recall trade-off rather than an improvement in AP.
+
+This trade-off is also visible when the threshold is changed. At 0.5, the test set contains 23,199 true negatives, 3,125 false positives, 294 false negatives and 3,382 true positives, totalling 30,000 records. The F1-optimal threshold of 0.8145 selected from training OOF predictions gives test precision 0.706, recall 0.748 and F1 0.727. The recall-target threshold of 0.7383 gives precision 0.650, recall 0.806 and F1 0.720. Both thresholds are chosen from training OOF predictions before test evaluation, so the reported operating points do not result from optimizing test metrics.
+
+The HTML and PDF dashboard brings the model metrics, signed-grouped SHAP and all five ablations together using the same CSV results as the manuscript (Fig.~\ref{fig:dashboard}). Its work-mode filter updates descriptive counts and company-level rates while leaving model scores tied to the fixed test set. The project also includes the full-size dashboard, confusion matrix and threshold plots for closer inspection.
+
+@@DASHBOARD@@
+
+\section{Discussion}
+The absence of At Risk labels among 12,749 low-stress records, together with the gradient at high stress, is consistent with a relatively clean, rule-like process for generating the synthetic labels. At high stress, the At Risk rate rises from 46.9\% among records with no more than 40 weekly hours to 93.0\% above 60 hours. A linear model can rank observations effectively when a small group of variables has such a strong relationship with the label, which offers a plausible explanation for the Logistic Regression result. The associations do not reveal the unavailable generator formula or establish that linear models would perform best in real workplaces.
+
+The comparison of attribution aggregations shows how preprocessing can affect interpretation even when predictions remain unchanged. Summing the magnitudes of opposing one-hot contributions makes work mode appear important despite its nearly constant descriptive risk rates. Signed regrouping removes this inflation, although the resulting values still explain the fitted model under independent masking. The treatment ablation addresses a related concern about which information is available at prediction time. Its nonzero loss shows that treatment indicators contribute to discrimination, but unknown timing prevents a conclusion that they leak the outcome. F4 remains a synthetic, cross-sectional classifier, and stress, anxiety and depression may also overlap conceptually with burnout. Evaluating screening before treatment would require predictors recorded before independently measured outcomes.
+
+The main limitation is the absence of validation on real occupational data, including external, temporal and subgroup evaluation. Combining Moderate and High labels also prevents assessment of severity. The fixed configurations use different weighting objectives, particularly the unweighted MLP, while five-fold comparisons and conditional bootstrap omit uncertainty from retraining and population transfer. SHAP depends on a background of 100 effective records, and the additional sensitivities were examined retrospectively on the existing test set. Future work should therefore use representative timestamped data with validated outcomes, assess calibration and subgroup performance, and select thresholds according to support capacity and the cost of missed cases. Increasing the number of resamples within this dataset would not resolve those questions.
+
+\section{Conclusion}
+Weekly working hours, stress, work--life balance and manager support are the leading variables in this synthetic benchmark. Signed-grouped SHAP gives Work environment and Psychological attribution shares of 55.08\% and 32.16\%. Logistic Regression, selected by training CV, achieves test AP 0.811 (95\% interval 0.800--0.822), ROC-AUC 0.964 and F1 0.664 with all predictors in F1. Removing only the psychological variables lowers AP by 0.0825 to 0.728. Treatment-excluded F4 achieves AP 0.790 (95\% interval 0.778--0.801) and is the recommended benchmark configuration when treatment timing is unknown. Retaining only work environment and lifestyle gives AP 0.689. These comparisons answer the research questions within the simulated records; F4 and the other configurations still require temporal and external validation before any screening application.
+
+\section*{Data and Code Availability}
+The dataset is available from Kaggle under CC0: Public Domain \cite{dataset}. Analysis code, library versions, model artifacts, row indices, predictions, SQL checks and reproduction instructions are available at \url{https://github.com/Group15-FA26-AI2109/burnout-risk-classification}, with commands in \texttt{README.md}.
+
