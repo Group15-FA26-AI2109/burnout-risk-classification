@@ -1,0 +1,4 @@
+Strategy,PR_AUC,Recall,Precision
+No correction,0.806 ± 0.005,0.637 ± 0.007,0.770 ± 0.007
+Class weights,0.806 ± 0.005,0.911 ± 0.006,0.516 ± 0.002
+SMOTE,0.806 ± 0.005,0.897 ± 0.007,0.535 ± 0.003
